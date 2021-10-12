@@ -1,0 +1,6 @@
+name: MinecraftMapper
+version: '${project.version}'
+main: io.github.shishir03.minecraftmapper.MinecraftMapper
+api-version: 1.15
+authors: [ shishiriyer ]
+load: STARTUP
