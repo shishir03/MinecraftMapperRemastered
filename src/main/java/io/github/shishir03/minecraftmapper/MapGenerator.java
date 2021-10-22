@@ -59,7 +59,9 @@ public class MapGenerator extends ChunkGenerator {
                         }
                     }
                 } else {
-                    chunk.setBlock(x, height, z, Material.GRASS_BLOCK);
+                    if(height <= 0) chunk.setBlock(x, 1, z, Material.WATER);
+                    else chunk.setBlock(x, height, z, Material.GRASS_BLOCK);
+
                     if(currentTemp < 50) {
                         bg.setBiome(x, z, Biome.SNOWY_MOUNTAINS);
                         chunk.setBlock(x, height, z, Material.SNOW_BLOCK);
