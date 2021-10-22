@@ -45,43 +45,43 @@ public class MapGenerator extends ChunkGenerator {
                 boolean noData = currentTemp < -100 || currentPrecip < 0;
 
                 chunk.setBlock(x, 0, z, Material.BEDROCK);
-                if(height <= 0) {
-                    chunk.setBlock(x, 1, z, Material.WATER);
-                    if(noData) bg.setBiome(x, z, Biome.OCEAN);
-                } else {
-                    chunk.setBlock(x, height, z, Material.GRASS_BLOCK);
-
-                    if(noData) {
+                if(noData) {
+                    if(height <= 0) {
+                        chunk.setBlock(x, 1, z, Material.WATER);
+                        bg.setBiome(x, z, Biome.OCEAN);
+                    } else {
+                        chunk.setBlock(x, height, z, Material.GRASS_BLOCK);
                         if(height < 8) bg.setBiome(x, z, Biome.PLAINS);
                         else if(height < 50) bg.setBiome(x, z, Biome.WOODED_HILLS);
                         else {
                             bg.setBiome(x, z, Biome.SNOWY_MOUNTAINS);
                             chunk.setBlock(x, height, z, Material.SNOW_BLOCK);
                         }
+                    }
+                } else {
+                    chunk.setBlock(x, height, z, Material.GRASS_BLOCK);
+                    if(currentTemp < 50) {
+                        bg.setBiome(x, z, Biome.SNOWY_MOUNTAINS);
+                        chunk.setBlock(x, height, z, Material.SNOW_BLOCK);
+                    } else if(currentTemp < 70) {
+                        if(currentPrecip < 8) {
+                            bg.setBiome(x, z, Biome.DESERT);
+                            chunk.setBlock(x, height, z, Material.SAND);
+                        } else if(currentPrecip < 15) bg.setBiome(x, z, Biome.SAVANNA);
+                        else if(currentPrecip < 30) bg.setBiome(x, z, Biome.PLAINS);
+                        else bg.setBiome(x, z, Biome.FOREST);
                     } else {
-                        if(currentTemp < 50) {
-                            bg.setBiome(x, z, Biome.SNOWY_MOUNTAINS);
-                            chunk.setBlock(x, height, z, Material.SNOW_BLOCK);
-                        } else if(currentTemp < 70) {
-                            if(currentPrecip < 8) {
-                                bg.setBiome(x, z, Biome.DESERT);
-                                chunk.setBlock(x, height, z, Material.SAND);
-                            } else if(currentPrecip < 15) bg.setBiome(x, z, Biome.SAVANNA);
-                            else if(currentPrecip < 30) bg.setBiome(x, z, Biome.PLAINS);
-                            else bg.setBiome(x, z, Biome.FOREST);
-                        } else {
-                            if(currentPrecip < 15) {
-                                bg.setBiome(x, z, Biome.DESERT);
-                                chunk.setBlock(x, height, z, Material.SAND);
-                            } else if(currentPrecip < 30) bg.setBiome(x, z, Biome.SAVANNA);
-                            else bg.setBiome(x, z, Biome.JUNGLE);
-                        }
+                        if(currentPrecip < 15) {
+                            bg.setBiome(x, z, Biome.DESERT);
+                            chunk.setBlock(x, height, z, Material.SAND);
+                        } else if(currentPrecip < 30) bg.setBiome(x, z, Biome.SAVANNA);
+                        else bg.setBiome(x, z, Biome.JUNGLE);
                     }
+                }
 
-                    if(height > 1) chunk.setBlock(x, height - 1, z, Material.DIRT);
-                    for(int h = height - 2; h > 0; h--) {
-                        chunk.setBlock(x, h, z, Material.STONE);
-                    }
+                if(height > 1) chunk.setBlock(x, height - 1, z, Material.DIRT);
+                for(int h = height - 2; h > 0; h--) {
+                    chunk.setBlock(x, h, z, Material.STONE);
                 }
             }
         }
