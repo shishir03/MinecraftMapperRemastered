@@ -64,18 +64,18 @@ public class MapGenerator extends ChunkGenerator {
 
                     if(currentTemp < 50) {
                         bg.setBiome(x, z, Biome.SNOWY_MOUNTAINS);
-                        chunk.setBlock(x, height, z, Material.SNOW_BLOCK);
+                        if(height > 0) chunk.setBlock(x, height, z, Material.SNOW_BLOCK);
                     } else if(currentTemp < 70) {
                         if(currentPrecip < 8) {
                             bg.setBiome(x, z, Biome.DESERT);
-                            chunk.setBlock(x, height, z, Material.SAND);
+                            if(height > 0) chunk.setBlock(x, height, z, Material.SAND);
                         } else if(currentPrecip < 15) bg.setBiome(x, z, Biome.SAVANNA);
                         else if(currentPrecip < 30) bg.setBiome(x, z, Biome.PLAINS);
                         else bg.setBiome(x, z, Biome.FOREST);
                     } else {
                         if(currentPrecip < 15) {
                             bg.setBiome(x, z, Biome.DESERT);
-                            chunk.setBlock(x, height, z, Material.SAND);
+                            if(height > 0) chunk.setBlock(x, height, z, Material.SAND);
                         } else if(currentPrecip < 30) bg.setBiome(x, z, Biome.SAVANNA);
                         else bg.setBiome(x, z, Biome.JUNGLE);
                     }
