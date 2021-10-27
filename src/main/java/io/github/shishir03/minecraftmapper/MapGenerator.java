@@ -38,11 +38,39 @@ public class MapGenerator extends ChunkGenerator {
 
                 if(worldX >= 0 && worldZ <= 0 && worldX < elevations[0].length && worldZ > -elevations.length) {
                     height = (int)(Math.ceil(elevations[-worldZ][worldX]/50.0));
-                    currentTemp = tempData[(int)Math.round(-worldZ*0.24)][(int)Math.round(worldX*0.24)];
-                    currentPrecip = precipData[(int)Math.round(-worldZ*0.24)][(int)Math.round(worldX*0.24)];
+
+                    int[] neighbor1 = {(int)Math.floor(-worldZ*0.24), (int)Math.floor(worldX*0.24)};
+                    int[] neighbor2 = {(int)Math.floor(-worldZ*0.24), (int)Math.ceil(worldX*0.24)};
+                    int[] neighbor3 = {(int)Math.ceil(-worldZ*0.24), (int)Math.floor(worldX*0.24)};
+                    int[] neighbor4 = {(int)Math.ceil(-worldZ*0.24), (int)Math.ceil(worldX*0.24)};
+
+                    double[] current = {-worldZ*0.24, worldX*0.24};
+
+                    double weight1 = (1 - current[0] - neighbor1[0])*(1 - current[1] - neighbor1[1]);
+                    double weight2 = (1 - current[0] - neighbor2[0])*(1 - current[1] - neighbor2[1]);
+                    double weight3 = (1 - current[0] - neighbor3[0])*(1 - current[1] - neighbor3[1]);
+                    double weight4 = (1 - current[0] - neighbor4[0])*(1 - current[1] - neighbor4[1]);
+
+                    double t1 = tempData[neighbor1[0]][neighbor1[1]];
+                    double t2 = tempData[neighbor2[0]][neighbor2[1]];
+                    double t3 = tempData[neighbor3[0]][neighbor3[1]];
+                    double t4 = tempData[neighbor4[0]][neighbor4[1]];
+
+                    double p1 = precipData[neighbor1[0]][neighbor1[1]];
+                    double p2 = precipData[neighbor2[0]][neighbor2[1]];
+                    double p3 = precipData[neighbor3[0]][neighbor3[1]];
+                    double p4 = precipData[neighbor4[0]][neighbor4[1]];
+
+                    if(p1 < 0 || p2 < 0 || p3 < 0 || p4 < 0) {
+                        currentTemp = tempData[(int)Math.round(-worldZ*0.24)][(int)Math.round(worldX*0.24)];
+                        currentPrecip = precipData[(int)Math.round(-worldZ*0.24)][(int)Math.round(worldX*0.24)];
+                    } else {
+                        currentTemp = weight1*t1 + weight2*t2 + weight3*t3 + weight4*t4;
+                        currentPrecip = weight1*p1 + weight2*p2 + weight3*p3 + weight4*p4;
+                    }
                 }
 
-                boolean noData = currentTemp < -100 || currentPrecip < 0;
+                boolean noData = currentPrecip < 0;
 
                 chunk.setBlock(x, 0, z, Material.BEDROCK);
                 if(noData) {
