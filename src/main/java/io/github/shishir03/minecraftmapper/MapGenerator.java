@@ -39,17 +39,17 @@ public class MapGenerator extends ChunkGenerator {
                 if(worldX >= 0 && worldZ <= 0 && worldX < elevations[0].length && worldZ > -elevations.length) {
                     height = (int)(Math.ceil(elevations[-worldZ][worldX]/50.0));
 
-                    int[] neighbor1 = {(int)Math.floor(-worldZ*0.24), (int)Math.floor(worldX*0.24)};
-                    int[] neighbor2 = {(int)Math.floor(-worldZ*0.24), (int)Math.ceil(worldX*0.24)};
-                    int[] neighbor3 = {(int)Math.ceil(-worldZ*0.24), (int)Math.floor(worldX*0.24)};
-                    int[] neighbor4 = {(int)Math.ceil(-worldZ*0.24), (int)Math.ceil(worldX*0.24)};
+                    int[] neighbor1 = {(int)(-worldZ*0.24), (int)(worldX*0.24)};
+                    int[] neighbor2 = {(int)(-worldZ*0.24), (int)(worldX*0.24) + 1};
+                    int[] neighbor3 = {(int)(-worldZ*0.24) + 1, (int)(worldX*0.24)};
+                    int[] neighbor4 = {(int)(-worldZ*0.24) + 1, (int)(worldX*0.24) + 1};
 
                     double[] current = {-worldZ*0.24, worldX*0.24};
 
-                    double weight1 = (1 - current[0] - neighbor1[0])*(1 - current[1] - neighbor1[1]);
-                    double weight2 = (1 - current[0] - neighbor2[0])*(1 - current[1] - neighbor2[1]);
-                    double weight3 = (1 - current[0] - neighbor3[0])*(1 - current[1] - neighbor3[1]);
-                    double weight4 = (1 - current[0] - neighbor4[0])*(1 - current[1] - neighbor4[1]);
+                    double weight1 = (1 - Math.abs(current[0] - neighbor1[0]))*(1 - Math.abs(current[1] - neighbor1[1]));
+                    double weight2 = (1 - Math.abs(current[0] - neighbor2[0]))*(1 - Math.abs(current[1] - neighbor2[1]));
+                    double weight3 = (1 - Math.abs(current[0] - neighbor3[0]))*(1 - Math.abs(current[1] - neighbor3[1]));
+                    double weight4 = (1 - Math.abs(current[0] - neighbor4[0]))*(1 - Math.abs(current[1] - neighbor4[1]));
 
                     double t1 = tempData[neighbor1[0]][neighbor1[1]];
                     double t2 = tempData[neighbor2[0]][neighbor2[1]];
