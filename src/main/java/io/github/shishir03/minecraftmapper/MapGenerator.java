@@ -1,6 +1,6 @@
 package io.github.shishir03.minecraftmapper;
 
-import org.bukkit.Material;
+/* import org.bukkit.Material;
 import org.bukkit.block.Biome;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -299,5 +299,11 @@ public class MapGenerator extends ChunkGenerator {
         }
 
         return null;
+    }
+} */
+
+public class MapGenerator {
+    public static void main(String[] args) {
+
     }
 }
