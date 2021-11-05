@@ -17,6 +17,7 @@ public final class MinecraftMapper extends JavaPlugin {
 
     @Override
     public ChunkGenerator getDefaultWorldGenerator(String worldName, String id) {
-       return new MapGenerator();
+       // return new MapGenerator();
+        return null;
     }
 }
