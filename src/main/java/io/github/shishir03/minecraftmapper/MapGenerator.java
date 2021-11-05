@@ -302,8 +302,11 @@ public class MapGenerator extends ChunkGenerator {
     }
 } */
 
+import ucar.ma2.*;
+import ucar.nc2.NetcdfFile;
+
 public class MapGenerator {
     public static void main(String[] args) {
-
+        NetcdfFile f = new NetcdfFile()
     }
 }

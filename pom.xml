@@ -14,7 +14,7 @@
     <properties>
         <java.version>11</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <geotools.version>25.1</geotools.version>
+        <!--<geotools.version>25.1</geotools.version>-->
     </properties>
 
     <build>
@@ -60,6 +60,12 @@
         </repository>
 
         <repository>
+            <id>unidata-all</id>
+            <name>Unidata All</name>
+            <url>https://artifacts.unidata.ucar.edu/repository/unidata-all/</url>
+        </repository>
+
+        <!--<repository>
             <id>osgeo-alt</id>
             <url>https://repo.osgeo.org/repository/release/</url>
         </repository>
@@ -68,7 +74,7 @@
             <id>geomajas</id>
             <name>Geomajas Maven Repository</name>
             <url>http://maven.geomajas.org/(http://maven.geomajas.org/)</url>
-        </repository>
+        </repository>-->
     </repositories>
 
     <dependencies>
@@ -86,9 +92,15 @@
         </dependency>
 
         <dependency>
+            <groupId>edu.ucar</groupId>
+            <artifactId>cdm-core</artifactId>
+            <version>5.2.0</version>
+        </dependency>
+
+        <!--<dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-geotiff</artifactId>
             <version>${geotools.version}</version>
-        </dependency>
+        </dependency>-->
     </dependencies>
 </project>
