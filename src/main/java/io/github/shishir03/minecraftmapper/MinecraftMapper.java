@@ -8,8 +8,8 @@ import java.io.InputStream;
 import java.util.Properties;
 
 public final class MinecraftMapper extends JavaPlugin {
-    private double latMin, longMin, latMax, longMax;
-    private ElevationDataLoader edl;
+    double latMin, longMin, latMax, longMax;
+    ElevationDataLoader edl;
 
     @Override
     public void onEnable() {
@@ -19,8 +19,10 @@ public final class MinecraftMapper extends JavaPlugin {
         longMin = coords[1];
         latMax = coords[2];
         longMax = coords[3];
-
         edl = new ElevationDataLoader();
+
+        getCommand("getcoords").setExecutor(new MinecraftMapperCommandExecutor(this));
+        getCommand("tpcoords").setExecutor(new MinecraftMapperCommandExecutor(this));
     }
 
     @Override

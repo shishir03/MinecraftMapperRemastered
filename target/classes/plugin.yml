@@ -4,3 +4,14 @@ main: io.github.shishir03.minecraftmapper.MinecraftMapper
 api-version: 1.15
 authors: [ shishiriyer ]
 load: STARTUP
+commands:
+  getcoords:
+    description: Returns the lat/long coordinates and the elevation of the player who sent the command.
+    usage: /getcoords
+    permission: MinecraftMapper.getCoords
+    permission-message: You do not have permission to do this
+  tpcoords:
+    description: Teleports the player to the specified latitude and longitude coordinates and elevation. If elevation is not specified, teleports the player to the ground by default.
+    usage: /tpcoords [newLat] [newLong]
+    permission: MinecraftMapper.tpcoords
+    permission-message: You do not have permission to do this
