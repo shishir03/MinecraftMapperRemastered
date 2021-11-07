@@ -1,6 +1,6 @@
 package io.github.shishir03.minecraftmapper;
 
-/* import org.bukkit.Material;
+import org.bukkit.Material;
 import org.bukkit.block.Biome;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -8,18 +8,20 @@ import org.json.simple.parser.*;
 import org.bukkit.World;
 import org.bukkit.generator.ChunkGenerator;
 
+import ucar.ma2.Array;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.Variable;
+
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Properties;
 import java.util.Random;
-import java.util.Scanner;
 
 public class MapGenerator extends ChunkGenerator {
     private final double[] coords = coords(getSeed());
-    private final long[][] elevations = loadElevationData();
+    // private final long[][] elevations = loadElevationData();
     private final double[][] precipData = loadClimateAvgs("yly_pcpn");
     private final double[][] tempData = loadClimateAvgs("yly_avgt");
 
@@ -27,43 +29,92 @@ public class MapGenerator extends ChunkGenerator {
     public ChunkData generateChunkData(World w, Random rand, int chunkX, int chunkZ, BiomeGrid bg) {
         ChunkData chunk = createChunkData(w);
 
+        double latMin = coords[0];
+        double longMin = coords[1];
+        double latMax = coords[2];
+        double longMax = coords[3];
+
+        NetcdfFile f = null;
+        try {
+            String jarPath = MapGenerator.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
+            String separator = System.getProperty("file.separator");
+            String filepath = jarPath.substring(0, jarPath.lastIndexOf(separator) + 1);
+            f = NetcdfFile.open(filepath + "GEBCO_2021.nc");
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+
+        assert f != null;
+        Variable lat = f.findVariable("lat");
+        Variable lon = f.findVariable("lon");
+        Variable elevation = f.findVariable("elevation");
+
+        int rank = elevation.getRank();
+        int[] shape = elevation.getShape();
+        int nRows = shape[0];
+        int nCols = shape[1];
+
+        int[] readOrigin = new int[rank];
+        int[] readShape = new int[rank];
+
         for(int x = 0; x < 16; x++) {
             for(int z = 0; z < 16; z++) {
                 int worldX = chunkX*16 + x;
                 int worldZ = chunkZ*16 + z;
-                int height = 0;
+                short height = 0;
 
                 double currentTemp = -999;
                 double currentPrecip = -999;
 
-                if(worldX >= 0 && worldZ <= 0 && worldX < elevations[0].length && worldZ > -elevations.length) {
-                    height = (int)(Math.ceil(elevations[-worldZ][worldX]/50.0));
+                double currentLat = latMin - worldZ/240.0;
+                double currentLong = longMin + worldX/240.0;
 
-                    int[] neighbor1 = {(int)(-worldZ*0.24), (int)(worldX*0.24)};
-                    int[] neighbor2 = {(int)(-worldZ*0.24), (int)(worldX*0.24) + 1};
-                    int[] neighbor3 = {(int)(-worldZ*0.24) + 1, (int)(worldX*0.24)};
-                    int[] neighbor4 = {(int)(-worldZ*0.24) + 1, (int)(worldX*0.24) + 1};
+                if(currentLat >= latMin && currentLat < latMax && currentLong >= longMin && currentLong < longMax) {
+                    int row = (int)Math.floor((currentLat + 90) * 240);
+                    int col = (int)Math.floor((currentLong + 180) * 240);
 
-                    double[] current = {-worldZ*0.24, worldX*0.24};
+                    readOrigin[0] = row;
+                    readOrigin[1] = col;
+                    readShape[0] = 1;
+                    readShape[1] = 1;
+
+                    Array a = null;
+                    try {
+                        a = elevation.read(readOrigin, readShape);
+                    } catch(Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    assert a != null;
+                    height = (short)(Math.ceil(a.getShort(0)/100.0) + 128);
+
+                    int[] neighbor1 = {(int)(-worldZ*0.1), (int)(worldX*0.1)};
+                    int[] neighbor2 = {(int)(-worldZ*0.1), (int)(worldX*0.1) + 1};
+                    int[] neighbor3 = {(int)(-worldZ*0.1) + 1, (int)(worldX*0.1)};
+                    int[] neighbor4 = {(int)(-worldZ*0.1) + 1, (int)(worldX*0.1) + 1};
+
+                    double[] current = {-worldZ*0.1, worldX*0.1};
 
                     double weight1 = (1 - Math.abs(current[0] - neighbor1[0]))*(1 - Math.abs(current[1] - neighbor1[1]));
                     double weight2 = (1 - Math.abs(current[0] - neighbor2[0]))*(1 - Math.abs(current[1] - neighbor2[1]));
                     double weight3 = (1 - Math.abs(current[0] - neighbor3[0]))*(1 - Math.abs(current[1] - neighbor3[1]));
                     double weight4 = (1 - Math.abs(current[0] - neighbor4[0]))*(1 - Math.abs(current[1] - neighbor4[1]));
 
+                    assert tempData != null;
                     double t1 = tempData[neighbor1[0]][neighbor1[1]];
                     double t2 = tempData[neighbor2[0]][neighbor2[1]];
                     double t3 = tempData[neighbor3[0]][neighbor3[1]];
                     double t4 = tempData[neighbor4[0]][neighbor4[1]];
 
+                    assert precipData != null;
                     double p1 = precipData[neighbor1[0]][neighbor1[1]];
                     double p2 = precipData[neighbor2[0]][neighbor2[1]];
                     double p3 = precipData[neighbor3[0]][neighbor3[1]];
                     double p4 = precipData[neighbor4[0]][neighbor4[1]];
 
                     if(p1 < 0 || p2 < 0 || p3 < 0 || p4 < 0) {
-                        currentTemp = tempData[(int)Math.round(-worldZ*0.24)][(int)Math.round(worldX*0.24)];
-                        currentPrecip = precipData[(int)Math.round(-worldZ*0.24)][(int)Math.round(worldX*0.24)];
+                        currentTemp = tempData[(int)Math.round(-worldZ*0.1)][(int)Math.round(worldX*0.1)];
+                        currentPrecip = precipData[(int)Math.round(-worldZ*0.1)][(int)Math.round(worldX*0.1)];
                     } else {
                         currentTemp = weight1*t1 + weight2*t2 + weight3*t3 + weight4*t4;
                         currentPrecip = weight1*p1 + weight2*p2 + weight3*p3 + weight4*p4;
@@ -74,7 +125,7 @@ public class MapGenerator extends ChunkGenerator {
 
                 chunk.setBlock(x, 0, z, Material.BEDROCK);
                 if(noData) {
-                    if(height <= 0) {
+                    if(height <= 128) {
                         chunk.setBlock(x, 1, z, Material.WATER);
                         bg.setBiome(x, z, Biome.OCEAN);
                     } else {
@@ -116,75 +167,13 @@ public class MapGenerator extends ChunkGenerator {
             }
         }
 
+        try {
+            f.close();
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+
         return chunk;
-    }
-
-    private long[][] loadElevationData() {
-        // Each gridpoint is spaced 0.01 degrees apart for both latitude and longitude
-        double latMin = coords[0];
-        double longMin = coords[1];
-        double latMax = coords[2];
-        double longMax = coords[3];
-
-        int numLatPoints = (int)Math.round((latMax - latMin)*100);
-        int numLongPoints = (int)Math.round((longMax - longMin)*100);
-        long[][] elevations = new long[numLatPoints][numLongPoints];
-
-        double latitude = latMin;
-
-        for(int i = 0; i < numLatPoints; i++) {
-            ArrayList<String> urls = apiCalls(latitude, longMin, longMax);
-
-            int j = 0;
-
-            for(String u : urls) {
-                try {
-                    URL api = new URL(u);
-                    Scanner input = new Scanner(api.openStream());
-                    StringBuilder line = new StringBuilder();
-                    while (input.hasNext()) line.append(input.nextLine());
-                    String l = line.toString();
-
-                    JSONObject obj = (JSONObject) new JSONParser().parse(l);
-
-                    int numPoints = u.split(",").length - 1;
-                    for(int k = 0; k < numPoints; k++) {
-                        JSONObject output = (JSONObject) ((JSONArray) (obj.get("results"))).get(k);
-                        long elevation = (long) output.get("elevation");
-                        elevations[i][j] = elevation;
-                        j++;
-                    }
-
-                    input.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-
-            latitude += 0.01;
-        }
-
-        return elevations;
-    }
-
-    // Returns an ArrayList of the appropriate api calls for a given line of latitude and a range of longitudes
-    private ArrayList<String> apiCalls(double latitude, double longMin, double longMax) {
-        ArrayList<String> apiCalls = new ArrayList<>();
-
-        for(double startingLongitude = longMin; startingLongitude < longMax; startingLongitude++) {
-            StringBuilder url = new StringBuilder("https://api.open-elevation.com/api/v1/lookup?locations=");
-            String separator = "";
-
-            for (double lg = startingLongitude; lg < Math.min(longMax, startingLongitude + 1); lg += 0.01) {
-                url.append(separator);
-                url.append(latitude).append(",").append(lg);
-                separator = "|";
-            }
-
-            apiCalls.add(url.toString());
-        }
-
-        return apiCalls;
     }
 
     // Obtains the seed value from server.properties
@@ -299,14 +288,5 @@ public class MapGenerator extends ChunkGenerator {
         }
 
         return null;
-    }
-} */
-
-import ucar.ma2.*;
-import ucar.nc2.NetcdfFile;
-
-public class MapGenerator {
-    public static void main(String[] args) {
-        NetcdfFile f = new NetcdfFile()
     }
 }
