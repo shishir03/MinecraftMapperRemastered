@@ -9,6 +9,7 @@ import java.util.Properties;
 
 public final class MinecraftMapper extends JavaPlugin {
     private double latMin, longMin, latMax, longMax;
+    private ElevationDataLoader edl;
 
     @Override
     public void onEnable() {
@@ -18,16 +19,19 @@ public final class MinecraftMapper extends JavaPlugin {
         longMin = coords[1];
         latMax = coords[2];
         longMax = coords[3];
+
+        edl = new ElevationDataLoader();
     }
 
     @Override
     public void onDisable() {
         // Plugin shutdown logic
+        edl.close();
     }
 
     @Override
     public ChunkGenerator getDefaultWorldGenerator(String worldName, String id) {
-        return new MapGenerator(latMin, longMin, latMax, longMax);
+        return new MapGenerator(latMin, longMin, latMax, longMax, edl);
     }
 
     // Obtains the seed value from server.properties

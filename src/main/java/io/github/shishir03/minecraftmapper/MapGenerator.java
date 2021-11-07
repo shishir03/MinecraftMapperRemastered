@@ -10,12 +10,15 @@ import java.util.Random;
 public class MapGenerator extends ChunkGenerator {
     private final double latMin, longMin, latMax, longMax;
     private final double[][] precipData, tempData;
+    private final ElevationDataLoader edl;
 
-    public MapGenerator(double latMin, double longMin, double latMax, double longMax) {
+    public MapGenerator(double latMin, double longMin, double latMax, double longMax, ElevationDataLoader e) {
         this.latMin = latMin;
         this.latMax = latMax;
         this.longMin = longMin;
         this.longMax = longMax;
+
+        edl = e;
 
         ClimateDataLoader cdlPrecip = new ClimateDataLoader("yly_pcpn", longMin, latMin, longMax, latMax);
         ClimateDataLoader cdlTemp = new ClimateDataLoader("yly_avgt", longMin, latMin, longMax, latMax);
@@ -27,8 +30,6 @@ public class MapGenerator extends ChunkGenerator {
     @Override
     public ChunkData generateChunkData(World w, Random rand, int chunkX, int chunkZ, BiomeGrid bg) {
         ChunkData chunk = createChunkData(w);
-
-        ElevationDataLoader e = new ElevationDataLoader();
 
         for(int x = 0; x < 16; x++) {
             for(int z = 0; z < 16; z++) {
@@ -43,10 +44,10 @@ public class MapGenerator extends ChunkGenerator {
                 double currentLong = longMin + worldX/240.0;
 
                 if(currentLat >= latMin && currentLat < latMax && currentLong >= longMin && currentLong < longMax) {
-                    height = e.getElevation(currentLat, currentLong);
+                    height = (short)(Math.ceil(edl.getElevation(currentLat, currentLong)/100.0) + 128);
 
-                    WeightedAverage tempWeights = new WeightedAverage(tempData, -worldZ*0.1, worldX*0.1);
-                    WeightedAverage precipWeights = new WeightedAverage(precipData, -worldZ*0.1, worldX*0.1);
+                    WeightedAverage tempWeights = new WeightedAverage(tempData, -worldZ*0.1 + 1, worldX*0.1);
+                    WeightedAverage precipWeights = new WeightedAverage(precipData, -worldZ*0.1 + 1, worldX*0.1);
 
                     double[] wp = precipWeights.weightPoints();
                     if(wp[0] < 0 || wp[1] < 0 || wp[2] < 0 || wp[3] < 0) {
@@ -102,8 +103,6 @@ public class MapGenerator extends ChunkGenerator {
                 }
             }
         }
-
-        e.close();
 
         return chunk;
     }

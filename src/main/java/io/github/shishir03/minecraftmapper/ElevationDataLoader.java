@@ -25,7 +25,7 @@ public class ElevationDataLoader {
     public short getElevation(double latitude, double longitude) {
         try {
             Array a = elevation.read(new int[] {(int)Math.floor((latitude + 90) * 240), (int)Math.floor((longitude + 180) * 240)}, new int[] {1, 1});
-            return (short)(Math.ceil(a.getShort(0)/100.0) + 128);
+            return a.getShort(0);
         } catch(Exception e) {
             e.printStackTrace();
         }
