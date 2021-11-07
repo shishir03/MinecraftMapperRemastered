@@ -5,10 +5,6 @@ import org.bukkit.block.Biome;
 import org.bukkit.World;
 import org.bukkit.generator.ChunkGenerator;
 
-import ucar.ma2.Array;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.Variable;
-
 import java.util.Random;
 
 public class MapGenerator extends ChunkGenerator {
@@ -21,8 +17,8 @@ public class MapGenerator extends ChunkGenerator {
         this.longMin = longMin;
         this.longMax = longMax;
 
-        ClimateDataLoader cdlPrecip = new ClimateDataLoader("yly-pcpn", longMin, latMin, longMax, latMax);
-        ClimateDataLoader cdlTemp = new ClimateDataLoader("yly-avgt", longMin, latMin, longMax, latMax);
+        ClimateDataLoader cdlPrecip = new ClimateDataLoader("yly_pcpn", longMin, latMin, longMax, latMax);
+        ClimateDataLoader cdlTemp = new ClimateDataLoader("yly_avgt", longMin, latMin, longMax, latMax);
 
         precipData = cdlPrecip.loadClimateAvgs();
         tempData = cdlTemp.loadClimateAvgs();
