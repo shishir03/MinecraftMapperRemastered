@@ -1,4 +1,6 @@
 io/github/shishir03/minecraftmapper/ElevationDataLoader.class
+io/github/shishir03/minecraftmapper/ImageReader.class
 io/github/shishir03/minecraftmapper/WeightedAverage.class
 io/github/shishir03/minecraftmapper/MinecraftMapperCommandExecutor.class
 io/github/shishir03/minecraftmapper/ClimateDataLoader.class
+io/github/shishir03/minecraftmapper/TreePopulator.class

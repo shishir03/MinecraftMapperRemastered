@@ -3,8 +3,10 @@ package io.github.shishir03.minecraftmapper;
 import org.bukkit.Material;
 import org.bukkit.block.Biome;
 import org.bukkit.World;
+import org.bukkit.generator.BlockPopulator;
 import org.bukkit.generator.ChunkGenerator;
 
+import java.util.List;
 import java.util.Random;
 
 public class MapGenerator extends ChunkGenerator {
@@ -84,7 +86,7 @@ public class MapGenerator extends ChunkGenerator {
                         chunk.setBlock(x, height - 1, z, Material.STONE);
                         if(currentPrecip < 25 || currentTemp < 32) bg.setBiome(x, z, Biome.SNOWY_TUNDRA);
                         else bg.setBiome(x, z, Biome.SNOWY_TAIGA);
-                    } else if(currentTemp < 64) {
+                    } else if(currentTemp < 70) {
                         if(currentPrecip < 10) {
                             bg.setBiome(x, z, Biome.DESERT);
                             chunk.setBlock(x, height, z, Material.SAND);
@@ -114,4 +116,8 @@ public class MapGenerator extends ChunkGenerator {
 
         return chunk;
     }
+
+    /* public List<BlockPopulator> getDefaultPopulators(World w) {
+        return List.of(new TreePopulator());
+    } */
 }

@@ -17,6 +17,9 @@ out/
 #TIFF Files
 *.tif
 
+#PNG files
+*.png
+
 #NetCDF files
 *.nc
 
