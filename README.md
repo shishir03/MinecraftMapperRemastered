@@ -21,3 +21,14 @@ Future Tasks
  - Add some more features to the terrain, like trees and shrubs. Right now, even though the ground cover matches the biome, it still looks pretty boring.
  - Figure out a more efficient way of reading the images. My current approach uses a lot of memory in favor of a faster runtime, and more efficient memory usage leads to impractically long runtime. This would also allow me to generate larger areas and potentially the entire world.
  - Find a source for water surface elevation data - right now, bodies of water above sea level have an uneven surface since I'm only generating a single block of water over the ground.
+
+Screenshots
+-------------
+
+![Image](2022-04-10_21.24.40.png "The Bay Area")
+
+![Image](2022-04-10_21.27.32.png "The Grand Canyon, viewed from the North Rim")
+
+![Image](2022-04-10_21.31.22.png "Mount Hood, looking north")
+
+![Image](2022-04-10_21.34.15.png "Catalina Island, looking towards LA")
