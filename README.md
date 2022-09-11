@@ -14,6 +14,8 @@ The elevation data is acquired from [GEBCO bathymetry data](https://www.gebco.ne
 
 In order to determine which areas should have water, I used [NASA satellite imagery](https://visibleearth.nasa.gov/) and downloaded some high resolution files of various regions of the Earth during March. The resolution was such that a single pixel corresponds to a block in the Minecraft world (specifically 21600 by 21600). By looking at the color of each pixel, I could see whether it was close enough to the color of the ocean and then determine whether to generate water over that area. This algorithm is still not perfect, but it's still better than simply filling in all areas below sea level with water and leaving everywhere else dry.
 
+I go into some more detail in [this blog post](https://shishir-iyer.medium.com/exploring-the-world-through-a-minecraft-plugin-27b922c3463f).
+
 Future Tasks
 -------------
 
